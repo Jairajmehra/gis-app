@@ -2,9 +2,36 @@
 
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
-import Navbar from './components/Navbar';
+import Navbar from '../components/Navbar';
+import Head from 'next/head';
 
-export default function Home() {
+export const metadata = {
+  title: 'GeoMapShare - Georeference & Share Custom PNG Overlays on Satellite Maps',
+  description: 'Upload PNG images or layout designs, accurately georeference them on satellite maps, and instantly generate shareable links. Perfect for architects, planners, and GIS professionals.',
+  keywords: 'georeference, satellite maps, PNG overlay, GIS, mapping tool, geospatial data, map sharing',
+  openGraph: {
+    title: 'GeoMapShare - Georeference & Share Custom PNG Overlays',
+    description: 'Upload PNG images or layout designs, accurately georeference them on satellite maps, and instantly generate shareable links.',
+    type: 'website',
+    url: 'https://geomapshare.com',
+    images: [
+      {
+        url: '/og-image.png',
+        width: 1200,
+        height: 630,
+        alt: 'GeoMapShare Preview'
+      }
+    ]
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'GeoMapShare - Georeference & Share Custom PNG Overlays',
+    description: 'Upload PNG images or layout designs, accurately georeference them on satellite maps, and instantly generate shareable links.',
+    images: ['/twitter-image.png']
+  }
+};
+
+export default function LandingPage() {
   const pathname = usePathname();
 
   return (
@@ -23,7 +50,7 @@ export default function Home() {
             </p>
             <div className="mt-10 flex items-center justify-center">
               <Link
-                href="/georeference"
+                href="/"
                 className="rounded-full bg-[#E55C5C] px-12 py-4 text-xl font-semibold text-white shadow-sm hover:bg-[#d45151] transition-colors"
                 aria-label="Try GeoMapShare Now"
               >

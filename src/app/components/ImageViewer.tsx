@@ -12,9 +12,17 @@ interface ClickableImageOverlayProps {
 }
 
 const ClickableImageOverlay: React.FC<ClickableImageOverlayProps> = ({ imageUrl, bounds, onImageClick }) => {
+  useEffect(() => {
+    console.log('🖼️ Image Overlay mounted:', {
+      imageUrl,
+      bounds
+    });
+  }, [imageUrl, bounds]);
+
   useMapEvents({
     click: onImageClick
   });
+  
   return <ImageOverlay url={imageUrl} bounds={bounds} />;
 };
 
@@ -36,21 +44,60 @@ const ImageViewer: React.FC<ImageViewerProps> = ({ imageUrl, onImageClick, contr
     setIsMounted(true);
   }, []);
 
-  useEffect(() => {
-    if (!isMounted) return;
-    
-    const img = new Image();
-    img.onload = () => {
-      if (mapRef.current) {
-        const bounds: L.LatLngBoundsExpression = [
+  // Custom hook to handle image dimensions and map fitting
+  const useImageDimensions = (imageUrl: string, mapRef: React.MutableRefObject<L.Map | null>) => {
+    useEffect(() => {
+      console.log('🔍 Starting to load image:', imageUrl);
+      
+      const img = new Image();
+      img.onload = () => {
+        console.log('✅ Image loaded successfully:', {
+          width: img.width,
+          height: img.height,
+          aspectRatio: (img.width / img.height).toFixed(2)
+        });
+
+        if (!mapRef.current) {
+          console.warn('⚠️ Map reference not available');
+          return;
+        }
+        
+        // Calculate bounds based on image dimensions
+        const bounds = [
           [0, 0],
           [img.height, img.width]
-        ];
-        mapRef.current.fitBounds(bounds);
-      }
-    };
-    img.src = imageUrl;
-  }, [imageUrl, isMounted]);
+        ] as L.LatLngBoundsExpression;
+
+        console.log('📏 Setting map bounds:', {
+          bounds,
+          currentCenter: mapRef.current.getCenter(),
+          currentZoom: mapRef.current.getZoom()
+        });
+        
+        // Set bounds and center the image
+        mapRef.current.fitBounds(bounds, {
+          padding: [50, 50],
+          maxZoom: 0,
+          animate: false
+        });
+
+        // Log final map state
+        console.log('🎯 Final map state:', {
+          center: mapRef.current.getCenter(),
+          zoom: mapRef.current.getZoom(),
+          bounds: mapRef.current.getBounds()
+        });
+      };
+
+      img.onerror = (error) => {
+        console.error('❌ Error loading image:', error);
+      };
+
+      img.src = imageUrl;
+    }, [imageUrl, mapRef]);
+  };
+
+  useImageDimensions(imageUrl, mapRef);
 
   const createPointIcon = (index: number, isActive: boolean): L.DivIcon => {
     return L.divIcon({
