@@ -34,7 +34,7 @@ function Home() {
     const [isSettingMapPoint, setIsSettingMapPoint] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(false);
     const [isGenerating, setIsGenerating] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(false);
     const { isLoaded } = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$react$2d$google$2d$maps$2f$api$2f$dist$2f$esm$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useLoadScript"])({
-        googleMapsApiKey: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$build$2f$polyfills$2f$process$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["default"].env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "AIzaSyC6TRmdiA0WTKEI8dUjW96GpRq5oXp9VnM"
+        googleMapsApiKey: ("TURBOPACK compile-time value", "AIzaSyC6TRmdiA0WTKEI8dUjW96GpRq5oXp9VnM") || ""
     });
     const center = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useMemo"])({
         "Home.useMemo[center]": ()=>({
@@ -147,7 +147,7 @@ function Home() {
                 timestamp: new Date().toISOString()
             };
             formData.append('points', JSON.stringify(pointsData));
-            const response = await fetch('http://192.168.29.3:5010/generate_xyz_tiles', {
+            const response = await fetch('http://35.207.193.193:80/generate_xyz_tiles', {
                 method: 'POST',
                 body: formData
             });

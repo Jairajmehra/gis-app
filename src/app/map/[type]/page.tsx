@@ -11,7 +11,7 @@ export default function MapPage() {
   const [isValidFolder, setIsValidFolder] = useState<boolean | null>(null);
 
   const { isLoaded } = useLoadScript({
-    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "AIzaSyC6TRmdiA0WTKEI8dUjW96GpRq5oXp9VnM",
+    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "",
   });
 
   const center = { lat: 23.0225, lng: 72.5714 }; // Default center (Ahmedabad)
@@ -19,7 +19,7 @@ export default function MapPage() {
   useEffect(() => {
     const checkFolderExists = async () => {
       try {
-        const response = await fetch(`http://192.168.29.3:5005/check_folder_id?folder_id=${folderId}`);
+        const response = await fetch(`http://35.207.193.193:80/check_folder_id?folder_id=${folderId}`);
         const data = await response.json();
         
         if (!response.ok) {
@@ -46,7 +46,7 @@ export default function MapPage() {
   const createCustomTileLayer = () => {
     return new google.maps.ImageMapType({
       getTileUrl: function(coord, zoom) {
-        const url = `http://192.168.29.3:5005/tile_output/${folderId}/tiles/${zoom}/${coord.x}/${coord.y}.png`;
+        const url = `http://35.207.193.193:80/tiles/${folderId}/tiles/${zoom}/${coord.x}/${coord.y}.png`;
         
         // Log tile requests for debugging
         console.log('Requesting tile:', url);

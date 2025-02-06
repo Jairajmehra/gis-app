@@ -29,7 +29,7 @@ export default function Home() {
   const [isGenerating, setIsGenerating] = useState(false);
 
   const { isLoaded } = useLoadScript({
-    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "AIzaSyC6TRmdiA0WTKEI8dUjW96GpRq5oXp9VnM",
+    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "",
   });
 
   const center = useMemo(() => ({ lat: 23.0225, lng: 72.5714 }), []); // Coordinates for Ahmedabad
@@ -142,7 +142,7 @@ export default function Home() {
       
       formData.append('points', JSON.stringify(pointsData));
 
-      const response = await fetch('http://192.168.29.3:5010/generate_xyz_tiles', {
+      const response = await fetch('http://35.207.193.193:80/generate_xyz_tiles', {
         method: 'POST',
         body: formData
       });
