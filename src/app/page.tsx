@@ -2,6 +2,7 @@
 
 import React, { useMemo, useState, useRef } from 'react';
 import { useLoadScript, GoogleMap, Marker } from '@react-google-maps/api';
+import Image from 'next/image';
 
 interface ControlPoint {
   id: number;
@@ -9,9 +10,14 @@ interface ControlPoint {
   mapCoords: { lat: number; lng: number } | null;
 }
 
+interface ModalMessage {
+  type: 'text' | 'jsx';
+  content: string | React.ReactNode;
+}
+
 interface Modal {
   show: boolean;
-  message: string;
+  message: ModalMessage;
 }
 
 export default function Home() {
@@ -20,7 +26,10 @@ export default function Home() {
   const [zoom, setZoom] = useState(1);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const imgRef = useRef<HTMLImageElement>(null);
-  const [modal, setModal] = useState<Modal>({ show: false, message: '' });
+  const [modal, setModal] = useState<Modal>({ 
+    show: false, 
+    message: { type: 'text', content: '' } 
+  });
   
   // Georeferencing state
   const [controlPoints, setControlPoints] = useState<ControlPoint[]>([]);
@@ -111,7 +120,10 @@ export default function Home() {
     if (!selectedFile || controlPoints.length === 0) {
       setModal({
         show: true,
-        message: 'Please select an image and add at least one control point.'
+        message: {
+          type: 'text',
+          content: 'Please select an image and add at least one control point.'
+        }
       });
       return;
     }
@@ -121,7 +133,10 @@ export default function Home() {
     if (completePoints.length === 0) {
       setModal({
         show: true,
-        message: 'Please add at least one complete control point with map coordinates.'
+        message: {
+          type: 'text',
+          content: 'Please add at least one complete control point with map coordinates.'
+        }
       });
       return;
     }
@@ -158,20 +173,23 @@ export default function Home() {
         const mapUrl = `http://192.168.3.1:3003/map/${data.output_directory}`;
         setModal({
           show: true,
-          message: (
-            <div className="text-center">
-              <p className="mb-4">Tiles generated successfully!</p>
-              <p className="mb-2">Your map is available at:</p>
-              <a 
-                href={mapUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-500 hover:text-blue-600 break-all"
-              >
-                {mapUrl}
-              </a>
-            </div>
-          ) as any
+          message: {
+            type: 'jsx',
+            content: (
+              <div className="text-center">
+                <p className="mb-4">Tiles generated successfully!</p>
+                <p className="mb-2">Your map is available at:</p>
+                <a 
+                  href={mapUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-500 hover:text-blue-600 break-all"
+                >
+                  {mapUrl}
+                </a>
+              </div>
+            )
+          }
         });
       } else {
         throw new Error('Invalid response from server');
@@ -181,7 +199,10 @@ export default function Home() {
       console.error('Error details:', error);
       setModal({
         show: true,
-        message: error instanceof Error ? error.message : 'Error generating XYZ tiles. Please try again.'
+        message: {
+          type: 'text',
+          content: error instanceof Error ? error.message : 'Error generating XYZ tiles. Please try again.'
+        }
       });
     } finally {
       setIsGenerating(false);
@@ -280,16 +301,19 @@ export default function Home() {
           <div className="flex-1 overflow-auto border rounded-lg relative">
             {selectedImage && (
               <div className="min-h-full w-full overflow-auto relative">
-                <img 
-                  ref={imgRef}
+                <Image 
                   src={selectedImage}
                   alt="Uploaded PNG"
+                  width={800}
+                  height={600}
                   onClick={handleImageClick}
                   className="cursor-crosshair"
                   style={{
                     transform: `scale(${zoom})`,
                     transformOrigin: 'top left',
-                    transition: 'transform 0.2s ease-in-out'
+                    transition: 'transform 0.2s ease-in-out',
+                    width: 'auto',
+                    height: 'auto'
                   }}
                 />
                 {controlPoints.map((point, index) => (
@@ -345,9 +369,13 @@ export default function Home() {
       {modal.show && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-lg p-6 max-w-sm w-full">
-            <p className="text-gray-800 mb-4">{modal.message}</p>
+            {modal.message.type === 'text' ? (
+              <p className="text-gray-800 mb-4">{modal.message.content as string}</p>
+            ) : (
+              <div className="text-gray-800 mb-4">{modal.message.content}</div>
+            )}
             <button
-              onClick={() => setModal({ show: false, message: '' })}
+              onClick={() => setModal({ show: false, message: { type: 'text', content: '' } })}
               className="w-full px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
             >
               OK
