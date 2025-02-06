@@ -153,7 +153,7 @@ export default function Home() {
       
       formData.append('points', JSON.stringify(pointsData));
 
-      const response = await fetch('http://35.207.193.193:80/generate_xyz_tiles', {
+      const response = await fetch('https://api.redlitchee.com/generate_xyz_tiles', {
         method: 'POST',
         body: formData
       });

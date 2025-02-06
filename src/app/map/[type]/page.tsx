@@ -19,7 +19,7 @@ export default function MapPage() {
   useEffect(() => {
     const checkFolderExists = async () => {
       try {
-        const response = await fetch(`https://35.207.193.193/check_folder_id?folder_id=${folderId}`);
+        const response = await fetch(`https://api.redlitchee.com/check_folder_id?folder_id=${folderId}`);
         const data = await response.json();
         
         if (!response.ok) {
@@ -46,7 +46,7 @@ export default function MapPage() {
   const createCustomTileLayer = () => {
     return new google.maps.ImageMapType({
       getTileUrl: function(coord, zoom) {
-        const url = `https://35.207.193.193/${folderId}/tiles/${zoom}/${coord.x}/${coord.y}.png`;
+        const url = `https://api.redlitchee.com/${folderId}/tiles/${zoom}/${coord.x}/${coord.y}.png`;
         
         // Log tile requests for debugging
         console.log('Requesting tile:', url);
