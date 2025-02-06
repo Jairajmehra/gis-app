@@ -294,6 +294,14 @@ export default function Home() {
                 >
                   {isGenerating ? 'Generating...' : 'Georeference'}
                 </button>
+                {controlPoints.length > 0 && (
+                  <button
+                    onClick={handleExportPoints}
+                    className="px-6 py-2 bg-purple-500 text-white rounded hover:bg-purple-600 transition-colors"
+                  >
+                    Export Points
+                  </button>
+                )}
               </>
             )}
           </div>
