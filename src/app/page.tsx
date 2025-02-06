@@ -1,10 +1,8 @@
 'use client';
 
-import React, { useMemo, useState, useRef, useCallback } from 'react';
+import React, { useMemo, useState, useRef } from 'react';
 import { useLoadScript, GoogleMap, Marker } from '@react-google-maps/api';
-import { TransformWrapper, TransformComponent, ReactZoomPanPinchState } from 'react-zoom-pan-pinch';
-import Image from 'next/image';
-import ImageViewer from './components/ImageViewer';
+import DynamicImageViewer from './components/DynamicImageViewer';
 import type { LeafletMouseEvent } from 'leaflet';
 
 interface ControlPoint {
@@ -23,17 +21,10 @@ interface Modal {
   message: ModalMessage;
 }
 
-interface TransformState {
-  scale: number;
-  positionX: number;
-  positionY: number;
-}
-
 export default function Home() {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const imgRef = useRef<HTMLImageElement>(null);
   const [modal, setModal] = useState<Modal>({ 
     show: false, 
     message: { type: 'text', content: '' } 
@@ -175,7 +166,7 @@ export default function Home() {
       const data = await response.json();
       
       if (data.status === 'success' && data.output_directory) {
-        const mapUrl = `http://192.168.3.1:3003/map/${data.output_directory}`;
+        const mapUrl = `https://gis-app-git-main-jairaj-mehras-projects.vercel.app/map/${data.output_directory}`;
         setModal({
           show: true,
           message: {
@@ -309,7 +300,7 @@ export default function Home() {
           <div className="flex-1 flex flex-col overflow-hidden">
             {selectedImage ? (
               <div className="flex-1 relative">
-                <ImageViewer
+                <DynamicImageViewer
                   imageUrl={selectedImage}
                   onImageClick={handleImageClick}
                   controlPoints={controlPoints}

@@ -1,20 +1,9 @@
-import React from 'react';
+'use client';
+
+import React, { useEffect, useRef, useState } from 'react';
 import { MapContainer, ImageOverlay, useMapEvents, Marker } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-
-// Fix Leaflet default icon issue
-import icon from 'leaflet/dist/images/marker-icon.png';
-import iconShadow from 'leaflet/dist/images/marker-shadow.png';
-
-let DefaultIcon = L.icon({
-  iconUrl: icon.src,
-  shadowUrl: iconShadow.src,
-  iconSize: [25, 41],
-  iconAnchor: [12, 41]
-});
-
-L.Marker.prototype.options.icon = DefaultIcon;
 
 interface ClickableImageOverlayProps {
   imageUrl: string;
@@ -40,37 +29,59 @@ interface ImageViewerProps {
 }
 
 const ImageViewer: React.FC<ImageViewerProps> = ({ imageUrl, onImageClick, controlPoints, activePointId }) => {
-  const bounds: L.LatLngBoundsExpression = [
-    [0, 0],
-    [1000, 1000]
-  ];
+  const [isMounted, setIsMounted] = useState(false);
+  const mapRef = useRef<L.Map>(null);
 
-  // Create custom icon for control points
-  const createPointIcon = (index: number, isActive: boolean) => {
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!isMounted) return;
+    
+    const img = new Image();
+    img.onload = () => {
+      if (mapRef.current) {
+        const bounds: L.LatLngBoundsExpression = [
+          [0, 0],
+          [img.height, img.width]
+        ];
+        mapRef.current.fitBounds(bounds);
+      }
+    };
+    img.src = imageUrl;
+  }, [imageUrl, isMounted]);
+
+  const createPointIcon = (index: number, isActive: boolean): L.DivIcon => {
     return L.divIcon({
       className: 'custom-point-icon',
-      html: `
-        <div class="w-4 h-4 rounded-full border-2 ${isActive ? 'border-red-500 bg-red-200' : 'border-blue-500 bg-blue-200'}">
-          <span class="absolute -top-6 left-1/2 -translate-x-1/2 bg-white px-2 rounded shadow text-sm">
-            ${index + 1}
-          </span>
-        </div>
-      `,
+      html: `<div class="w-4 h-4 rounded-full border-2 ${
+        isActive ? 'border-red-500 bg-red-200' : 'border-blue-500 bg-blue-200'
+      }"><span class="absolute -top-6 left-1/2 -translate-x-1/2 bg-white px-2 rounded shadow text-sm">${
+        index + 1
+      }</span></div>`,
       iconSize: [16, 16],
       iconAnchor: [8, 8]
     });
   };
 
+  if (!isMounted) {
+    return <div className="w-full h-full flex items-center justify-center">Loading map...</div>;
+  }
+
+  const bounds: L.LatLngBoundsExpression = [[0, 0], [1000, 1000]];
+
   return (
     <div className="w-full h-full">
       <MapContainer
+        ref={mapRef}
         bounds={bounds}
         style={{ height: '100%', width: '100%' }}
         attributionControl={false}
         crs={L.CRS.Simple}
-        zoom={0}
-        center={[500, 500]}
-        maxZoom={10}
+        minZoom={-2}
+        maxZoom={2}
+        doubleClickZoom={false}
       >
         <ClickableImageOverlay
           imageUrl={imageUrl}
